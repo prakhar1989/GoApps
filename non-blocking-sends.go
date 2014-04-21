@@ -12,4 +12,12 @@ func main() {
 	default:
 		fmt.Println("no message recieved")
 	}
+
+	msg := "hi"
+	select {
+	case messages <- msg:
+		fmt.Println("message sent")
+	default:
+		fmt.Println("message not sent")
+	}
 }
