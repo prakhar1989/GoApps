@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -26,20 +26,36 @@ func loadPage(title string) (*Page, error) {
 	return &Page{Title: title, Body: body}, nil
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
-	fmt.Fprintf(w, "Hi there! I love %s", r.URL.Path[1:])
-}
-
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/view/"):]
-	p, _ := loadPage(title)
-	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+	p, err := loadPage(title)
+	if err != nil {
+		http.NotFound(w, r)
+	} else {
+		t, _ := template.ParseFiles("view.html")
+		t.Execute(w, p)
+	}
+}
+
+func editHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.URL.Path[len("/edit/"):]
+	p, err := loadPage(title)
+	if err != nil {
+		p = &Page{Title: title}
+	}
+	t, _ := template.ParseFiles("edit.html")
+	t.Execute(w, p) // p is used as a context for the template
+}
+
+func saveHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/view/", viewHandler)
+	http.HandleFunc("/save/", saveHandler)
+	http.HandleFunc("/edit/", editHandler)
+
 	port := ":8080"
-	log.Println("Server running at" + port)
+	fmt.Println("Server running at" + port)
 	http.ListenAndServe(port, nil)
 }
