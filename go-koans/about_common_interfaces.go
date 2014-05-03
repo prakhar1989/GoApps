@@ -3,30 +3,24 @@ package go_koans
 import "bytes"
 
 func aboutCommonInterfaces() {
-  {
-    in := new(bytes.Buffer)
-    in.WriteString("hello world")
+	{
+		in := new(bytes.Buffer)
+		in.WriteString("hello world")
 
-    out := new(bytes.Buffer)
+		out := new(bytes.Buffer)
+		out.WriteString(in.String())
 
-    /*
-       Your code goes here.
-       Hint, use these resources:
+		assert(out.String() == "hello world") // get data from the io.Reader to the io.Writer
+	}
 
-       $ godoc -http=:8080
-       $ open http://localhost:8080/pkg/io/
-       $ open http://localhost:8080/pkg/bytes/
-    */
+	{
+		in := new(bytes.Buffer)
+		in.WriteString("hello world")
 
-    assert(out.String() == "hello world") // get data from the io.Reader to the io.Writer
-  }
+		out := new(bytes.Buffer)
+		x, _ := in.ReadString('o')
+		out.WriteString(x)
 
-  {
-    in := new(bytes.Buffer)
-    in.WriteString("hello world")
-
-    out := new(bytes.Buffer)
-
-    assert(out.String() == "hello") // duplicate only a portion of the io.Reader
-  }
+		assert(out.String() == "hello") // duplicate only a portion of the io.Reader
+	}
 }
